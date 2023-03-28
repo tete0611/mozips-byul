@@ -1,0 +1,30 @@
+{
+  "name": "mozips-byul",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node -r dotenv/config index.js dotenv_config_path=.env.master",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon -r dotenv/config index.js dotenv_config_path=.env.dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tete0611/mozips-byul.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tete0611/mozips-byul/issues"
+  },
+  "homepage": "https://github.com/tete0611/mozips-byul#readme",
+  "dependencies": {
+    "date-fns": "^2.29.3",
+    "discord.js": "^14.8.0",
+    "dotenv": "^16.0.3"
+  },
+  "devDependencies": {
+    "eslint": "^8.36.0"
+  }
+}
