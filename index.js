@@ -2,8 +2,6 @@ const { Client, Collection, REST, Routes, GatewayIntentBits } = require('discord
 // const mongoose = require('mongoose');
 const { env } = process;
 
-/** 되라좀 되라 */
-
 /** 서버연결 */
 // mongoose
 //   .connect(env.END_POINT, { dbName: env.DB_NAME })
