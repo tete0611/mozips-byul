@@ -2,7 +2,6 @@ const { Client, Collection, REST, Routes, GatewayIntentBits } = require('discord
 // const mongoose = require('mongoose');
 const { env } = process;
 
-// wqlkwkeqwe
 /** 서버연결 */
 // mongoose
 //   .connect(env.END_POINT, { dbName: env.DB_NAME })
@@ -12,9 +11,10 @@ const { env } = process;
 /** 클라이언트로 부터 수신할 패킷 선언 */
 const client = (module.exports = new Client({
   intents: [
-    // GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildVoiceStates,
     GatewayIntentBits.Guilds,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMessages,
   ],
 }));
 
