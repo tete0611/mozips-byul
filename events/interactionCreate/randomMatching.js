@@ -140,6 +140,8 @@ module.exports = {
             channel: waitingRoom,
             guild,
           } = interaction;
+          if (waitingRoom.name !== '대기방')
+            return interaction.reply({ content: '대기방에서 사용해주세요', ephemeral: true });
           const waitingRoomMembers = waitingRoom.members.map(v => v);
           /** 대기방에 내가 있는지 판별 */
           if (!waitingRoomMembers.some(v => v.user.tag === ownerUser.tag))
