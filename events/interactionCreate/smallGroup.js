@@ -29,7 +29,9 @@ module.exports = {
 
         /** 레벨 설정이 안된 경우 */
         const hasLevel = memberRoles.some(v =>
-          ['Level1', 'Level2', 'Level3', 'Level4', 'Level5', 'Level6', 'Level7'].includes(v.name),
+          ['Level 1', 'Level 2', 'Level 3', 'Level 4', 'Level 5', 'Level 6', 'Level 7'].includes(
+            v.name,
+          ),
         );
         if (!hasLevel)
           return DM_Channel.send({
