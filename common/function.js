@@ -29,24 +29,26 @@ module.exports = {
   },
 
   /**
-   * 파파고에러 함수
-   * @param {import('request').Response} response
-   *
+   * Date -> 한국시간 포맷 함수
+   * @param {Date} date 날짜 : Date 객체
+   * @param {boolean} yyyyMMdd yyyyMMdd 출력여부
+   * @returns {string} 변환된 날짜
    */
-  onPapagoError: response => {
-    const { errorCode } = JSON.parse(response.body);
-    switch (errorCode) {
-      case 'N2MT05':
-        return '이미 한국어가 포함되어있어요.';
-      case 'N2MT02':
-        return '지원하지 않는 나라의 언어입니다.';
-      case 'N2MT08':
-        return '너무 많은 글자를 번역에 시도했습니다.';
-      case 'N2MT99':
-        return '서버에러발생: 관리자에게 문의해주세요.';
-      default:
-        return response.body;
-    }
+  formatToGmt: (date, yyyyMMdd) => {
+    const tmp = date
+      .toLocaleString('en-GB', {
+        timeZone: 'Asia/Seoul',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+      .replace(' ', '')
+      .split(/,|\/|:/);
+    return yyyyMMdd
+      ? `${tmp[2]}${tmp[1]}${tmp[0]}`
+      : `${tmp[2]}-${tmp[1]}-${tmp[0]} ${tmp[3]}:${tmp[4]}`;
   },
 
   /**
