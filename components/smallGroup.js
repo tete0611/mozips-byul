@@ -2,7 +2,7 @@ const { ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
 
 const enterButton = new ButtonBuilder({
   custom_id: 'smallGroupEnterButton',
-  label: '소그룹 역할 부여받기',
+  label: '참가',
   style: ButtonStyle.Primary,
 });
 const cancelButton = new ButtonBuilder({
