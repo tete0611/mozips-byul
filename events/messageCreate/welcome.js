@@ -25,11 +25,11 @@ module.exports = {
             content: `모두 환영합니다! <#1051667735773458542> 채널에서 채팅을 시작해보세요.\nWelcome to Mozips village!\nThis channel is to introduce yourself.\nPlease use <#1051667735773458542> channel to chat :cherries:\nAnd don't forget to get your roles from <#1051689953295351818>`,
           });
         }
-        if (message.content.includes('안녕')) {
-          await message.reply({ content: `**반갑습니다!** :slight_smile:` });
-        } else if (REG_EXP.hello.test(message.content) || REG_EXP.hi.test(message.content)) {
-          await message.reply({ content: `**Hello!** :slight_smile:` });
-        }
+        // if (message.content.includes('안녕')) {
+        //   await message.reply({ content: `**반갑습니다!** :slight_smile:` });
+        // } else if (REG_EXP.hello.test(message.content) || REG_EXP.hi.test(message.content)) {
+        //   await message.reply({ content: `**Hello!** :slight_smile:` });
+        // }
       }
     } else if (
       message.channelId === koreanChannelId ||
