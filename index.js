@@ -39,10 +39,8 @@ for (const folder of eventFolders) {
 /** 커맨드 파일 등록 */
 client.commands = new Collection();
 /** 무시할 커맨드 파일 */
-const ignoreCommandFiles = [
-  /** ex) 'ban.js', */
-];
-const commands_json = ['birthday.js'];
+const ignoreCommandFiles = ['birthday.js'];
+const commands_json = [];
 const commandsFolders = fs.readdirSync('./commands');
 /** 폴더 loop */
 for (const folder of commandsFolders) {
