@@ -42,7 +42,7 @@ client.commands = new Collection();
 const ignoreCommandFiles = [
   /** ex) 'ban.js', */
 ];
-const commands_json = [];
+const commands_json = ['birthday.js'];
 const commandsFolders = fs.readdirSync('./commands');
 /** 폴더 loop */
 for (const folder of commandsFolders) {
