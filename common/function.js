@@ -1,5 +1,6 @@
 const { format } = require('date-fns');
 const { ko } = require('date-fns/locale/ko');
+const client = require('../index');
 
 module.exports = {
   /**
@@ -122,5 +123,30 @@ module.exports = {
           en: 'https://i.esdrop.com/d/f/jXycTwE2IA/JbQxHVQjDf.png',
         };
     }
+  },
+
+  /**
+   * 해당 유저의 프로필 사진을 가져오는 함수
+   * @param {import('discord.js').User} user 사용자의 user 객체
+   * @param {number} size 사진의 사이즈
+   * @returns {string} 사진 URL
+   */
+  getUserImage: (user, size) => {
+    return user.displayAvatarURL({ format: 'png', size: size });
+  },
+
+  /**
+   * userId로 User 객체를 가져오는 함수
+   * @param {string} userId 가져오려는 User의 ID
+   * @return {import('discord.js').User} User 객체
+   */
+  getUser: async userId => {
+    let user = null;
+    try {
+      user = await client.users.fetch(userId);
+    } catch (error) {
+      console.error(error);
+    }
+    return user;
   },
 };

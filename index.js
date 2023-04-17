@@ -1,12 +1,12 @@
 const { Client, Collection, REST, Routes, GatewayIntentBits } = require('discord.js');
-// const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 const { env } = process;
 
 /** 서버연결 */
-// mongoose
-//   .connect(env.END_POINT, { dbName: env.DB_NAME })
-//   .then(console.log('데이터베이스 연결완료'))
-//   .catch(console.error);
+mongoose
+  .connect(env.END_POINT, { dbName: env.DB_NAME })
+  .then(console.log('데이터베이스 연결완료'))
+  .catch(console.error);
 
 /** 클라이언트로 부터 수신할 패킷 선언 */
 const client = (module.exports = new Client({
@@ -42,7 +42,7 @@ client.commands = new Collection();
 const ignoreCommandFiles = [
   /** ex) 'ban.js', */
 ];
-const commands_json = [];
+const commands_json = ['birthday.js'];
 const commandsFolders = fs.readdirSync('./commands');
 /** 폴더 loop */
 for (const folder of commandsFolders) {
