@@ -128,7 +128,7 @@ module.exports = {
   /**
    * 해당 유저의 프로필 사진을 가져오는 함수
    * @param {import('discord.js').User} user 사용자의 user 객체
-   * @param {number} size 사진의 사이즈
+   * @param {number} size 사진의 사이즈 (16, 32, 64, 128, 256, 512, 1024, 2048, 4096)
    * @returns {string} 사진 URL
    */
   getUserImage: (user, size) => {
