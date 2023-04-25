@@ -10,12 +10,13 @@ module.exports = {
    */
   async execute(interaction) {
     if (!interaction.isChatInputCommand()) return;
-    const { commandName, createdAt, member, user, guild } = interaction;
+    const { commandName, createdAt, member, guild } = interaction;
     const managerChannel = guild.channels.cache.get(process.env.MANAGER_CHANNEL);
     managerChannel.send({
-      content: `**${
-        member.nickname ?? user.username
-      }**님이 **${commandName}**명령어 사용 (${formatToUtc(createdAt, 'yyyy-MM-dd HH:mm:ss')})`,
+      content: `**${member.displayName}**님이 **${commandName}**명령어 사용 (${formatToUtc(
+        createdAt,
+        'yyyy-MM-dd HH:mm:ss',
+      )})`,
       allowedMentions: {
         parse: ['users', 'roles'],
         repliedUser: false,

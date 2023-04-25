@@ -75,9 +75,9 @@ module.exports = {
         await channel.send({
           content: `${v.members
             .map(v2 => `@${v2}`)
-            .join(
-              ' ',
-            )} Here is the private channel for group N members!\nYou can use this channel until May 3`,
+            .join(' ')}\nHere is the private channel for group ${
+            v.members.length
+          } members!\nYou can use this channel until May 3`,
         });
       });
     }
