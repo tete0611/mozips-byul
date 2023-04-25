@@ -75,7 +75,7 @@ const onNormalMatch = async (memberList, interaction, limitTime, today) => {
   await Promise.all(
     memberList.map(async member => {
       if (!combineRoomMemberIds.includes(member.id)) {
-        console.log(`${member.nickname}님 도중이탈`);
+        console.log(`${member.displayName}님 도중이탈`);
         await waitingRoom.send(
           `__${member}__님이 매칭중 이탈하여 ${memberList
             .filter(v => v.id !== member.id)
@@ -92,7 +92,7 @@ const onNormalMatch = async (memberList, interaction, limitTime, today) => {
     memberList.forEach(member =>
       member.voice
         .setChannel(newChannel)
-        .then(v => console.log(`${newChannel.id}에 ${v.nickname} 초대완료`))
+        .then(v => console.log(`${newChannel.id}에 ${v.displayName} 초대완료`))
         .catch(console.error),
     );
     newChannel.send({
