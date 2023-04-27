@@ -20,6 +20,7 @@ module.exports = {
    * @param {import("discord.js").VoiceState} newState
    */
   async execute(oldState, newState) {
+    if (oldState.channelId === newState.channelId) return;
     // 랜덤매칭 리스너
     if (oldState?.channel?.parent?.id === parentId && oldState?.channel?.name === '랜덤방') {
       /** 이탈한 채널의 멤버가 혼자이고 채널이 존재한다면 */
