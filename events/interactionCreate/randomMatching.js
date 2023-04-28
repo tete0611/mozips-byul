@@ -137,6 +137,12 @@ module.exports = {
   async execute(interaction) {
     const { commandName, options } = interaction;
     if (commandName === '랜덤매칭') {
+      //
+      //
+      //
+      //
+      //
+      /** 개인매칭일 경우 */
       if (options.getSubcommand() === '개인') {
         console.log(processingList);
         const { user: ownerUser, member: ownerMember, channel: waitingRoom, guild } = interaction;
@@ -155,9 +161,6 @@ module.exports = {
         if (!waitingRoomMembers.some(v => v.user.tag === ownerUser.tag))
           return interaction.reply({ content: '대기방에 먼저 입장해주세요.', ephemeral: true });
         processingList.push(ownerUser.id);
-        await interaction.deferReply({
-          ephemeral: true,
-        });
 
         /** 온라인 중인 멤버 가져오기 */
         const onlineMembers = guild.members.cache.filter(
@@ -168,6 +171,18 @@ module.exports = {
             !member.user.bot &&
             member.user.id !== ownerUser.id,
         );
+
+        /** 매칭가능한 멤버가 있는지 검사 */
+        if (onlineMembers.size < 1)
+          return interaction.reply({
+            content: '서버에 현재 매칭가능한 멤버가 없어요 :pensive:',
+            ephemeral: true,
+          });
+
+        /** interaction 보류 */
+        await interaction.deferReply({
+          ephemeral: true,
+        });
 
         /** 온라인 멤버 랜덤선택 */
         const selectedMember = getRandomElement(onlineMembers.map(v => v));
