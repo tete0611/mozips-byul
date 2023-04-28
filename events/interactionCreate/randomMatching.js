@@ -144,17 +144,18 @@ module.exports = {
       //
       /** 개인매칭일 경우 */
       if (options.getSubcommand() === '개인') {
-        console.log(processingList);
         const { user: ownerUser, member: ownerMember, channel: waitingRoom, guild } = interaction;
 
-        /** 명령어 중복 사용인지 검사 */
+        /** 대기방에서 사용했는지 검사 */
+        if (waitingRoom.name !== '대기방')
+          return interaction.reply({ content: '대기방에서 사용해주세요', ephemeral: true });
+
+        /** 중복 사용인지 검사 */
         if (processingList.includes(ownerUser.id))
           return interaction.reply({
             content: '이미 랜덤매칭(개인)을 사용중이에요.',
             ephemeral: true,
           });
-        if (waitingRoom.name !== '대기방')
-          return interaction.reply({ content: '대기방에서 사용해주세요', ephemeral: true });
 
         /** 대기방에 내가 있는지 검사 */
         const waitingRoomMembers = waitingRoom.members.map(v => v);
@@ -180,7 +181,8 @@ module.exports = {
           });
 
         /** interaction 보류 */
-        await interaction.deferReply({
+        await interaction.reply({
+          content: '상대방의 응답을 기다리는중...',
           ephemeral: true,
         });
 
@@ -200,7 +202,7 @@ module.exports = {
           i.user.id === selectedUser.id;
         const collector = DM_Channel.createMessageComponentCollector({
           filter: filter,
-          time: 30000,
+          time: 60000,
         });
         collector.on('collect', async buttonInteraction => {
           const { message, customId } = buttonInteraction;
@@ -257,10 +259,10 @@ module.exports = {
         isEnd = false;
 
         /** 버튼 End 콜렉터 선언 */
-        collector.on('end', () => {
+        collector.on('end', async () => {
           isEnd = true;
           processingList = processingList.filter(v => v !== ownerUser.id);
-          if (!interaction.replied) interaction.editReply('상대방이 응답하지 않았어요.');
+          await interaction.editReply('상대방이 응답하지 않았어요.');
         });
         //
         //
