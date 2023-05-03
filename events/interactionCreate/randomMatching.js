@@ -7,12 +7,7 @@ const {
   AttachmentBuilder,
 } = require('discord.js');
 const { row_1 } = require('../../components/randomMatching');
-const {
-  getTwoDimensions,
-  getImageUrl,
-  formatToUtc,
-  getRandomElement,
-} = require('../../common/function');
+const { getTwoDimensions, getImageUrl, getRandomElement } = require('../../common/function');
 const { env } = process;
 const schedule = require('node-schedule');
 const { addMinutes } = require('date-fns');
@@ -21,7 +16,7 @@ const waitingRoomId = env.WAITING_ROOM_ID;
 const teacherRoomId = env.TEACHER_ROOM_ID;
 let isProcessing = false;
 let processingList = [];
-let isEnd = true;
+// let processingIds = [];
 
 /**
  * 배열 섞는 함수
@@ -36,7 +31,7 @@ const shuffle = array => {
 /**
  * 랜덤매칭 함수
  * @param {import('discord.js').GuildMember[]} memberList 매칭 참가자의 1차원 배열
- * @param {import('discord.js').Interaction} interaction 해당 interaction 객체
+ * @param {import('discord.js').CommandInteraction | import('discord.js').ButtonInteraction} interaction 해당 interaction 객체
  * @param {number} limitTime 제한시간
  * @param {Date} today 현재시각
  */
@@ -75,13 +70,11 @@ const onNormalMatch = async (memberList, interaction, limitTime, today) => {
     parent: env.RANDOM_ROOM_PARENT_ID,
     userLimit: memberList.length,
   });
-  console.log(`\n랜덤방 생성 , ID : ${newChannel.id}`);
   /** 도중 이탈이 있는지 점검 */
   let flag = true;
   await Promise.all(
     memberList.map(async member => {
       if (!combineRoomMemberIds.includes(member.id)) {
-        console.log(`${member.displayName}님 도중이탈`);
         await waitingRoom.send(
           `__${member}__님이 매칭중 이탈하여 ${memberList
             .filter(v => v.id !== member.id)
@@ -95,12 +88,7 @@ const onNormalMatch = async (memberList, interaction, limitTime, today) => {
     }),
   );
   if (flag) {
-    memberList.forEach(member =>
-      member.voice
-        .setChannel(newChannel)
-        .then(v => console.log(`${newChannel.id}에 ${v.displayName} 초대완료`))
-        .catch(console.error),
-    );
+    memberList.forEach(member => member.voice.setChannel(newChannel).catch(console.error));
     newChannel.send({
       embeds: [greeting],
       files: [topic, topic_en],
@@ -112,14 +100,12 @@ const onNormalMatch = async (memberList, interaction, limitTime, today) => {
     schedule.scheduleJob(addMinutes(today, limitTime - 1), async () => {
       const room = await guild.channels.cache.get(newChannel.id);
       if (room) {
-        console.log(`${newChannel.id}에 1분 알림 작동`);
         await newChannel.send({ content: '1분 남았습니다. 대화를 마무리해주세요!' });
       } else job_1.cancel();
     });
     const job_1 = schedule.scheduleJob(addMinutes(today, limitTime), async () => {
       const room = await guild.channels.cache.get(newChannel.id);
       if (room) {
-        console.log(`${newChannel.id}에 제한시간 마감 작동`);
         if (isTeacher) await memberList[0].voice.setChannel(teacherRoom);
         else memberList[0].voice.setChannel(waitingRoom);
       }
@@ -136,7 +122,7 @@ module.exports = {
    */
   async execute(interaction) {
     const { commandName, options } = interaction;
-    if (commandName === '랜덤매칭') {
+    if (interaction.isChatInputCommand() && commandName === '랜덤매칭') {
       //
       //
       //
@@ -156,7 +142,6 @@ module.exports = {
             content: '이미 랜덤매칭(개인)을 사용중이에요.',
             ephemeral: true,
           });
-
         /** 대기방에 내가 있는지 검사 */
         const waitingRoomMembers = waitingRoom.members.map(v => v);
         if (!waitingRoomMembers.some(v => v.user.tag === ownerUser.tag))
@@ -170,7 +155,8 @@ module.exports = {
             (!member.voice.channelId ||
               (member.voice.channelId && member.voice.channel.name === '대기방')) &&
             !member.user.bot &&
-            member.user.id !== ownerUser.id,
+            member.user.id !== ownerUser.id &&
+            member.user.id === '1078487280928428143',
         );
 
         /** 매칭가능한 멤버가 있는지 검사 */
@@ -204,6 +190,7 @@ module.exports = {
           filter: filter,
           time: 60000,
         });
+
         collector.on('collect', async buttonInteraction => {
           const { message, customId } = buttonInteraction;
           if (customId === 'randomMatchingConfirmButton') {
@@ -213,7 +200,7 @@ module.exports = {
                 content: '상대방이 대기방에 존재하지 않습니다',
                 components: [],
               });
-              interaction.editReply('대기방에 참가해있지 않은거 같아요');
+              await interaction.editReply('대기방에 참가해있지 않은거 같아요');
               return;
             }
             /** 수신자가 대기방에 있는지 판별 */
@@ -222,7 +209,7 @@ module.exports = {
                 content: `<#${env.WAITING_ROOM_ID}>에 참가해서 클릭해주세요`,
               });
 
-            interaction.editReply('상대방이 승락했어요! :wave:');
+            await interaction.editReply('상대방이 승락했어요! :wave:');
             const newChannel = await guild.channels.create({
               name: `랜덤방`,
               type: ChannelType.GuildVoice,
@@ -256,11 +243,11 @@ module.exports = {
           components: [row_1],
           flags: MessageFlags.Ephemeral,
         });
-        isEnd = false;
+        // processingIds.push(interaction.id);
 
         /** 버튼 End 콜렉터 선언 */
         collector.on('end', async () => {
-          isEnd = true;
+          // processingIds = processingIds.filter(v => v !== interaction.id);
           processingList = processingList.filter(v => v !== ownerUser.id);
           await interaction.editReply('상대방이 응답하지 않았어요.');
         });
@@ -276,12 +263,6 @@ module.exports = {
         const today = new Date();
         const limitTime = thisOptions.getInteger('제한시간설정');
         const isTeacher = thisOptions.getBoolean('선생님');
-        console.log(
-          `\n랜덤매칭 사용 (${formatToUtc(
-            new Date(),
-            'yyyy-MM-dd HH:mm:ss',
-          )}) , 선생님 : ${isTeacher} , 제한시간 : ${limitTime}`,
-        );
         const waitingRoomMembers = shuffle(waitingRoom.members.map(v => v));
         const waitingRoomMemberLength = waitingRoomMembers.length;
         let resultMembers = null;
@@ -313,7 +294,6 @@ module.exports = {
         }
         isProcessing = true;
         await interaction.reply({ content: '매칭중.....' });
-        console.log(`총 ${resultMembers.length}개 방 생성 준비`);
         /** 비동기 랜덤매칭 실행 */
         Promise.allSettled(resultMembers.map(v => onNormalMatch(v, interaction, limitTime, today)))
           .catch(err => console.log('랜덤매칭 에러발생 : ' + err))
@@ -322,13 +302,15 @@ module.exports = {
             interaction.editReply({ content: `매칭되었습니다` });
           });
       }
-    } else if (
-      /** 랜덤매칭 버튼일 경우 */
-      interaction.isButton() &&
-      (interaction.customId === 'randomMatchingConfirmButton' ||
-        interaction.customId === 'randomMatchingRejectButton')
-    ) {
-      if (isEnd) interaction.update({ content: '만료된 요청입니다.', components: [] });
     }
+    // else if (
+    //   /** 랜덤매칭 버튼일 경우 */
+    //   interaction.isButton() &&
+    //   (interaction.customId === 'randomMatchingConfirmButton' ||
+    //     interaction.customId === 'randomMatchingRejectButton')
+    // ) {
+    //   if (processingIds.includes(interaction))
+    //     interaction.update({ content: '만료된 요청입니다.', components: [] });
+    // }
   },
 };
