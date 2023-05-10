@@ -14,7 +14,7 @@ module.exports = {
     if (interaction.isChatInputCommand() && interaction.commandName === '소그룹버튼생성') {
       interaction.reply({ components: [enterButton] });
       /** 버튼 클릭일 경우 */
-    } else if (interaction.isButton()) {
+    } else if (interaction.isButton() && interaction.customId.includes('smallGroup')) {
       const { customId, guild, member, user, component } = interaction;
       /** 기존응답 보류후 삭제 */
       interaction.deferReply().then(async () => {

@@ -15,6 +15,7 @@ const client = (module.exports = new Client({
     GatewayIntentBits.Guilds,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildPresences,
   ],
 }));
 
