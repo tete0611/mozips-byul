@@ -7,7 +7,7 @@ const {
   AttachmentBuilder,
 } = require('discord.js');
 const { row_1 } = require('../../components/randomMatching');
-const { getTwoDimensions, getImageUrl } = require('../../common/function');
+const { getTwoDimensions, getImageUrl, checkRole } = require('../../common/function');
 const { env } = process;
 const schedule = require('node-schedule');
 const { addMinutes } = require('date-fns');
@@ -153,8 +153,9 @@ module.exports = {
             (!member.voice.channelId ||
               (member.voice.channelId && member.voice.channel.name === '대기방')) &&
             !member.user.bot &&
-            member.user.id !== ownerUser.id &&
-            member.user.id === '1078487280928428143',
+            member.user.id !== ownerUser.id,
+          // &&
+          // member.user.id === '1078487280928428143',
         );
 
         /** 매칭가능한 멤버가 있는지 검사 */
@@ -252,7 +253,8 @@ module.exports = {
         /** 콜렉터 종료 리스너 등록 */
         collector.on('end', async () => {
           processingUserIds = processingUserIds.filter(v => v !== ownerUser.id);
-          if (!collector.endReason) await interaction.editReply('상대방이 응답하지 않았어요.');
+          if (collector.endReason === 'time')
+            await interaction.editReply('상대방이 응답하지 않았어요.');
         });
 
         /** DM전송 */
@@ -269,6 +271,8 @@ module.exports = {
         //
         /** 전체매칭인 경우 */
       } else if (options.getSubcommand() === '전체') {
+        if (!checkRole(interaction.member, 'Manager'))
+          return interaction.reply({ content: '관리자만 사용할 수 있어요', ephemeral: true });
         if (isTotalMatchProcessing)
           return interaction.reply({ content: '이미 매칭 실행중입니다.' });
         const { options: thisOptions, channel: waitingRoom, guild } = interaction;
