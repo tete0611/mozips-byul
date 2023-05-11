@@ -132,7 +132,7 @@ module.exports = {
         const { user: ownerUser, member: ownerMember, channel: waitingRoom, guild } = interaction;
 
         /** 대기방에서 사용했는지 검사 */
-        if (waitingRoom.name !== '대기방')
+        if (waitingRoom.id !== env.WAITING_ROOM_ID)
           return interaction.reply({ content: '대기방에서 사용해주세요', ephemeral: true });
 
         /** 중복 사용인지 검사 */
