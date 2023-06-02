@@ -22,9 +22,4 @@ module.exports = {
     .addSubcommand(subCommand =>
       subCommand.setName('개인').setDescription('대기방에 있는 사용자 중 1명과 매칭해요.'),
     ),
-  /**
-   *
-   * @param {import("discord.js").CommandInteraction} interaction
-   */
-  async execute(interaction) {},
 };
