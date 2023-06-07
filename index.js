@@ -29,32 +29,23 @@ for (const folder of eventFolders) {
   /** 파일 loop */
   for (const file of eventFiles) {
     const event = require(`./events/${folder}/${file}`);
-    if (event.once == true) {
-      client.once(event.name, (...args) => event.execute(...args));
-    } else {
-      client.on(event.name, (...args) => event.execute(...args));
-    }
+    event.once === true
+      ? client.once(event.name, (...args) => event.execute(...args))
+      : client.on(event.name, (...args) => event.execute(...args));
   }
 }
-
 /** 커맨드 파일 등록 */
 client.commands = new Collection();
-/** 무시할 커맨드 파일 */
-const ignoreCommandFiles = [];
+const ignoreCommandFiles = []; // 무시할 커맨드 파일
 const commands_json = [];
-const commandsFolders = fs.readdirSync('./commands');
-/** 폴더 loop */
-for (const folder of commandsFolders) {
-  const commandsPath = `./commands/${folder}`;
-  const commandsFiles = fs
-    .readdirSync(commandsPath)
-    .filter(file => file.endsWith('.js') && !ignoreCommandFiles.includes(file));
-  /** 파일 loop */
-  for (const file of commandsFiles) {
-    const command = require(`./commands/${folder}/${file}`);
-    client.commands.set(command.data.name, command);
-    commands_json.push(command.data.toJSON());
-  }
+const commandsFiles = fs
+  .readdirSync('./commands')
+  .filter(file => file.endsWith('.js') && !ignoreCommandFiles.includes(file));
+/** 파일 loop */
+for (const file of commandsFiles) {
+  const command = require(`./commands/${file}`);
+  client.commands.set(command.data.name, command);
+  commands_json.push(command.data.toJSON());
 }
 const rest = new REST({ version: '10' }).setToken(env.TOKEN);
 
