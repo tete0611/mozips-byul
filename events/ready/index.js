@@ -34,24 +34,33 @@ module.exports = {
         const user = await getUser(userId);
         const userImage = await getUserImage(user, 4096);
         const guild = await client.guilds.cache.get(env.SERVER_ID);
-        const name = (await guild.members.fetch(user)).displayName;
-        const month = Number(date.substring(4, 6));
-        const day = Number(date.substring(6));
-        const embed = new EmbedBuilder()
-          .setTitle(`:birthday:${name}님의 생일을 축하합니다`)
-          .setDescription(
-            `${user}님 생일 축하해요:love_letter: 행복한 하루 보내세요\n\nHappy birthday,${name}:partying_face:\nLet's celebrate ${name}'s birthday together!\n\n_Villagers!_ ${name}님의 생일을 같이 축하해주세요!`,
-          )
-          .setColor(getRandomElement(colors))
-          .setFooter({
-            iconURL: 'https://i.esdrop.com/d/f/1Ik176tCZg/3VHW97RTiA.png',
-            text: 'Mozips village',
-          })
-          .setThumbnail(userImage);
+        try {
+          const member = await guild.members.fetch(user);
+          const name = member.displayName;
+          const month = Number(date.substring(4, 6));
+          const day = Number(date.substring(6));
+          const embed = new EmbedBuilder()
+            .setTitle(`:birthday:${name}님의 생일을 축하합니다`)
+            .setDescription(
+              `${user}님 생일 축하해요:love_letter: 행복한 하루 보내세요\n\nHappy birthday,${name}:partying_face:\nLet's celebrate ${name}'s birthday together!\n\n_Villagers!_ ${name}님의 생일을 같이 축하해주세요!`,
+            )
+            .setColor(getRandomElement(colors))
+            .setFooter({
+              iconURL: 'https://i.esdrop.com/d/f/1Ik176tCZg/3VHW97RTiA.png',
+              text: 'Mozips village',
+            })
+            .setThumbnail(userImage);
 
-        schedule.scheduleJob({ tz: 'Asia/Seoul', rule: `0 0 0 ${day} ${month} *` }, async () => {
-          await targetChannel.send({ embeds: [embed] });
-        });
+          schedule.scheduleJob({ tz: 'Asia/Seoul', rule: `0 0 0 ${day} ${month} *` }, async () => {
+            await targetChannel.send({ embeds: [embed] });
+          });
+        } catch (error) {
+          console.error(error);
+          if (error.message === 'Unknown Member')
+            await BirthDay.findOneAndDelete({ userId: userId })
+              .then(() => console.log(`Unknown Member ${userId} 가 삭제되었습니다.`))
+              .catch(err => '생일삭제 에러 : ' + err);
+        }
       });
       console.log(birthdayJobs.length + '개의 생일이 등록되었습니다.');
     }
